@@ -1,0 +1,11 @@
+<%- include('layout', { 
+    body: '<h1>' + title + '</h1>' +
+          '<p>' + top + '</p>' +
+          '<p>' + bottom + '</p>' +
+          '<!-- Meme Image -->' +
+          '<img ' +
+              'alt="' + top + '" ' +
+              'class="border img-fluid" ' +
+              'src="https://api.memegen.link/images/custom/' + encodeURIComponent(top) + '/' + encodeURIComponent(bottom) + '.jpg?background=https://i.imgur.com/CsCgN7Ll.png&width=400&font=impact" ' +
+              'title="' + top + '">'
+}) %>

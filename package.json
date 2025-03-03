@@ -1,0 +1,36 @@
+{
+	"name": "stockie",
+	"version": "1.0.0",
+	"description": "Idea from CS50 Finance but using NodeJS",
+	"main": "server.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"start": "nodemon ./src/server.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/StoriuSs/Stockie.git"
+	},
+	"keywords": [
+		"nodejs"
+	],
+	"author": "StoriuSs",
+	"license": "ISC",
+	"bugs": {
+		"url": "https://github.com/StoriuSs/Stockie/issues"
+	},
+	"homepage": "https://github.com/StoriuSs/Stockie#readme",
+	"dependencies": {
+		"bcrypt": "5.1.1",
+		"dotenv": "16.4.7",
+		"ejs": "3.1.10",
+		"ejs-mate": "4.0.0",
+		"express": "4.21.2",
+		"express-flash": "0.0.2",
+		"express-session": "1.18.1",
+		"mysql2": "3.12.0"
+	},
+	"devDependencies": {
+		"nodemon": "3.1.9"
+	}
+}
