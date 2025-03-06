@@ -1,22 +1,25 @@
 const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
-const { apology, loginRequired } = require('../utils/helpers');
+const { loginRequired } = require('../utils/helpers');
 const connection = require('../config/dbConfig');
 
 
 router.get('/', loginRequired, (req, res) => {
-    res.send(apology("TODO"));
+    res.send("TODO");
 });
 
 router.route('/login')
     .get((req, res) => {
-        res.render('login', { messages: req.flash('error') });
+        // Flash này chỉ có key, không có thông báo nên khi vào trang login lần đầu thì không có thông báo nào
+        res.render('login.ejs', { messages: req.flash('error') });
     })
     .post((req, res) => {
         const { username, password } = req.body;
         if (!username || !password) {
-            req.flash('error', 'must provide username and password');
+            req.flash('error', 'Must provide username and password');
+            // Thông báo 'Must provide username and password' được lưu vào key 'error' trong session
+            // và sẽ được sử dụng cho request tiếp theo (ở đây là request GET /login)
             return res.redirect('/login');
         }
 
@@ -28,7 +31,7 @@ router.route('/login')
             }
 
             if (rows.length !== 1 || !await bcrypt.compare(password, rows[0].hash)) {
-                req.flash('error', 'invalid username and/or password');
+                req.flash('error', 'Invalid username and/or password');
                 return res.redirect('/login');
             }
 
@@ -44,10 +47,10 @@ router.get('/logout', (req, res) => {
 
 router.route('/register')
     .get((req, res) => {
-        res.send(apology("TODO"));
+        res.render('register.ejs', { messages: req.flash('error') });
     })
     .post((req, res) => {
-        res.send(apology("TODO"));
+        res.send("TODO");
     });
 
 module.exports = router;

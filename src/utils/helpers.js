@@ -1,30 +1,5 @@
 const axios = require('axios');
 
-function apology(message, code = 400) {
-    const escape = (s) => {
-        const replacements = [
-            ["-", "--"],
-            [" ", "-"],
-            ["_", "__"],
-            ["?", "~q"],
-            ["%", "~p"],
-            ["#", "~h"],
-            ["/", "~s"],
-            ['"', "''"],
-        ];
-        replacements.forEach(([old, newStr]) => {
-            s = s.replace(new RegExp(old, 'g'), newStr);
-        });
-        return s;
-    };
-
-    return {
-        view: "apology",
-        data: { top: code, bottom: escape(message) },
-        status: code
-    };
-}
-
 function loginRequired(req, res, next) {
     if (!req.session.user_id) {
         return res.redirect('/login');
@@ -52,4 +27,4 @@ function usd(value) {
     return `$${value.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
 }
 
-module.exports = { apology, loginRequired, lookup, usd };
+module.exports = { loginRequired, lookup, usd };
