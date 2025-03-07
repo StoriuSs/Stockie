@@ -4,11 +4,11 @@ const { loginRequired } = require('../utils/helpers');
 const { getLoginPage, 
         postLoginPage, 
         getRegisterPage, 
-        postRegisterPage } = require('../controllers/authController');
+        postRegisterPage,
+        getHomePage,
+        getLogout } = require('../controllers/authController');
 
-router.get('/', loginRequired, (req, res) => {
-    res.send("TODO");
-});
+router.get('/', loginRequired, getHomePage);
 
 router.route('/login')
     .get(getLoginPage)
@@ -18,11 +18,6 @@ router.route('/register')
     .get(getRegisterPage)
     .post(postRegisterPage);
 
-router.get('/logout', (req, res) => {
-    req.session.destroy();
-    res.redirect('/');
-});
-
-
+router.get('/logout', getLogout);
 
 module.exports = router;

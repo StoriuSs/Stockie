@@ -1,9 +1,13 @@
 const connection = require('../config/dbConfig');
 const bcrypt = require('bcrypt');
 
+const getHomePage = (req, res) => {
+    res.render("index.ejs", { messages: req.flash('success'), status: 'success' });
+}
+
 const getLoginPage = (req, res) => {
     // Flash này chỉ có key, không có thông báo nên khi vào trang login lần đầu thì không có thông báo nào
-    res.render('login.ejs', { messages: req.flash('error') });
+    res.render('login.ejs', { messages: req.flash('error'), status: 'danger' });
 }
 
 const postLoginPage = async (req, res) => {
@@ -14,7 +18,6 @@ const postLoginPage = async (req, res) => {
         // và sẽ được sử dụng cho request tiếp theo (ở đây là request GET /login)
         return res.redirect('/login');
     }
-
     
     const [rows] = await connection.query('SELECT * FROM users WHERE username = ?', [username])
     try {
@@ -67,7 +70,18 @@ const postRegisterPage = async (req, res) => {
 
     const [rows] = await connection.query('SELECT * FROM users WHERE username = ?', [username])
     req.session.user_id = rows[0].id;
+    req.flash('success', 'Registered!');
     return res.redirect('/');
 }
 
-module.exports = { getLoginPage, postLoginPage, getRegisterPage, postRegisterPage };
+const getLogout = (req, res) => {
+    req.session.destroy();
+    res.redirect('/');
+}
+
+module.exports = { getLoginPage, 
+                   postLoginPage, 
+                   getRegisterPage, 
+                   postRegisterPage, 
+                   getHomePage,
+                   getLogout };
