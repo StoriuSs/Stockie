@@ -16,63 +16,58 @@ const postLoginPage = async (req, res) => {
     }
 
     
-    // const [listUsers, fields] = await connection.query('SELECT * FROM users WHERE username = ?', [username])
-    
-    connection.query('SELECT * FROM users WHERE username = ?', [username], async (err, rows) => {
-        if (err) {
-            console.error(err);
-            req.flash('error', 'Database error');
-            return res.redirect('/login');
-        }
-
+    const [rows] = await connection.query('SELECT * FROM users WHERE username = ?', [username])
+    try {
         if (rows.length !== 1 || !await bcrypt.compare(password, rows[0].hash)) {
             req.flash('error', 'Invalid username and/or password');
             return res.redirect('/login');
         }
-
-        req.session.user_id = rows[0].id;
-        res.redirect('/');
-    });
+    }
+    catch (err) {
+        console.error(err);
+        req.flash('error', 'Database error');
+        return res.redirect('/login');
+    }
+    
+    req.session.user_id = rows[0].id;
+    res.redirect('/');
 }
 
 const getRegisterPage = (req, res) => {
     res.render('register.ejs', { messages: req.flash('error') });
 }
 
-const postRegisterPage = (req, res) => {
+const postRegisterPage = async (req, res) => {
     const { username, password, confirmation } = req.body;
     if (!username || !password || !confirmation) {
         req.flash('error', 'Must provide username and password and confirmation');
         return res.redirect('/register');
     }
 
-    connection.query("SELECT username FROM users", (err, listUsers) => {
-        if (err) {
-            console.error(err);
-            req.flash('error', 'Database error');
-            return res.redirect('/register');
-        }
-        
-        if (username in listUsers) {
-            req.flash('error', 'Username already exists');
-            return res.redirect('/register');
-        }
-    })
+    const [listUsers] = await connection.query("SELECT username FROM users");
+    if (listUsers.some(user => user.username === username)) {
+        req.flash('error', 'Username already exists');
+        return res.redirect('/register');
+    }
 
     if (password != confirmation) {
         req.flash('error', 'Confirmation does not match password');
         return res.redirect('/register');
     }
     
-    connection.query("INSERT INTO users (username, hash) VALUES (?, ?)", 
-        [username, bcrypt.hashSync(password, 10)], 
-        (err) => {
-            if (err) {
-                console.error(err);
-                req.flash('error', 'Database error');
-                return res.redirect('/');
-            }
-        })
+    try {
+        await connection.query("INSERT INTO users (username, hash) VALUES (?, ?)", 
+        [username, bcrypt.hashSync(password, 10)])
+    }
+    catch (err) {
+        console.error(err);
+        req.flash('error', 'Database error');
+        return res.redirect('/register');
+    }
+
+    const [rows] = await connection.query('SELECT * FROM users WHERE username = ?', [username])
+    req.session.user_id = rows[0].id;
+    return res.redirect('/');
 }
 
 module.exports = { getLoginPage, postLoginPage, getRegisterPage, postRegisterPage };
